@@ -1,2 +1,2 @@
-# -JavaQA_HW
+# JavaQA_HW
 JavaQuA Internship Homework
