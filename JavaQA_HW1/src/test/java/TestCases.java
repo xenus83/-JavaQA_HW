@@ -42,7 +42,7 @@ public class TestCases {
 
     @Test
     public void HW1Test(){
-//        Case1test();
+          Case1test();
           Case2Test();
     }
 
@@ -203,9 +203,12 @@ public class TestCases {
         String regex = "(\\d*) товаров";
         final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
         final Matcher matcher = pattern.matcher(textElement.getText());
-        matcher.find();
-        int count = Integer.parseInt(matcher.group(1));
-        logger.info("В тексте Плиты электрические количество товаров = " + count + " Это " + (100 < count?"больше 100":"меньше 100" ));
+        if (matcher.find()) {
+            int count = Integer.parseInt(matcher.group(1));
+            logger.info("В тексте Плиты электрические количество товаров = " + count + " Это " + (100 < count ? "больше 100" : "меньше 100"));
+        }
+        else
+            logger.error("Регулярное выражение не сработало");
         logger.info("_____________________________\n");
     }
 }
