@@ -29,7 +29,7 @@ public class WebDriverFactory {
                 logger.info("Драйвер для браузера " + browserName);
                 ChromeOptions options = new ChromeOptions();
                 options.setCapability("pageLoadStrategy", PageLoadStrategy.fromString(pageLoadStrategy));
-                options.addArguments("--start-maximized");
+                options.addArguments("--start-fullscreen");
                 options.addArguments("--incognito");
                 options.setPageLoadTimeout(Duration.ofSeconds(45));
                 return new ChromeDriver(options);
@@ -40,7 +40,7 @@ public class WebDriverFactory {
                 FirefoxOptions options = new FirefoxOptions();
                 options.setCapability("pageLoadStrategy", PageLoadStrategy.fromString(pageLoadStrategy));
                 options.addArguments("--private");
-                options.addArguments("--maximized");
+                options.addArguments("--kiosk");
                 options.setPageLoadTimeout(Duration.ofSeconds(45));
                 return new FirefoxDriver(options);
             }
