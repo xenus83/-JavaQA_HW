@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.ClassOrderer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +42,7 @@ public class DNSCasesTests {
     protected static Selenium4Listener listener = new Selenium4Listener();
     protected static WebDriver eventDriver;
     private static final Logger logger = LogManager.getLogger(DNSCasesTests.class);
-    private static final String env = System.getProperty("browser","chrome");
+    public static final String env = System.getProperty("browser","chrome");
     private static final String pageLoadStrategy = System.getProperty("loadstrategy", "normal").toLowerCase();
     protected static WebDriverWait wait;
     protected static WebDriverWait eventWait;
@@ -87,7 +86,7 @@ public class DNSCasesTests {
 
     private void killTheCityConfirmation(){
         try {
-            WebElement cityIsALLRightDIV = wait.withTimeout(Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("(//div[@class=\"v-confirm-city\"])")));
+            WebElement cityIsALLRightDIV = wait.withTimeout(Duration.ofSeconds(10)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("(//div[@class=\"v-confirm-city_XmH\"])")));
             JSExecutor.executeScript("arguments[0].remove();", cityIsALLRightDIV);
         } catch (NoSuchElementException e) {
             logger.info("Дурацкой кнопки с подтверждением города нет, и слава богу! Сколько она крови попила...");
@@ -103,7 +102,7 @@ public class DNSCasesTests {
         try {
             int pageHeight = driver.manage().window().getSize().height/3;
 
-            JSExecutor.executeScript("arguments[0].scrollIntoView(true);  window.scrollBy(0, arguments[1]); ", targetWebElement,pageHeight);
+            JSExecutor.executeScript("arguments[0].scrollIntoView(true);  window.scrollBy(0, -1*arguments[1]); ", targetWebElement,pageHeight);
         } catch (JavascriptException e) {
             logger.error("JavascriptException: " + e.getRawMessage());
         }
@@ -115,7 +114,6 @@ public class DNSCasesTests {
     }
     @DisplayName("Case 01")
     @Nested
-    @Disabled
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class case1Tests {
 
@@ -240,7 +238,6 @@ public class DNSCasesTests {
 
     @DisplayName("Case 02")
     @Nested
-    @Disabled
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
     class case2Tests {
 
@@ -296,10 +293,9 @@ public class DNSCasesTests {
             WebElement appliancesLink = wait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions.presenceOfElementLocated(By.linkText("Бытовая техника")));
             actions.moveToElement(appliancesLink).perform();
             Assertions.assertDoesNotThrow(()->{
-                WebElement cookingLink = wait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions.presenceOfElementLocated(By.partialLinkText("Вытяжки")));
+                WebElement cookingLink = wait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("(//a[@class=\"ui-link menu-desktop__second-level\"][contains(translate(text(),\"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ\",\"абвгдеёжзийклмнопрстуфхцчшщэюя\"),\"вытяжки\")])")));
                 eventActions.moveToElement(cookingLink).perform();
-                //скриншот и возврат на место
-//                getScreenShootFullPage(driver);
+                //возврат на место
                 actions.pause(Duration.ofSeconds(2)).moveToElement(appliancesLink).perform();
                 actions.pause(Duration.ofSeconds(2)).moveToElement(cookingLink).perform();
             },
@@ -405,6 +401,14 @@ public class DNSCasesTests {
             logger.info("Шаг кейса: "+stepName);
             driver.get("https://www.dns-shop.ru/");
 
+            //задержка, чтобы хоть немного успевал мой тормозной фокс
+            if(DNSCasesTests.env.equalsIgnoreCase("firefox")){
+                try {
+                    Sleeper.SYSTEM_SLEEPER.sleep(Duration.ofSeconds(12));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             String linkPCAndPeripheryXPath = "(//*[@class=\"menu-desktop__root\"]/*[@class=\"menu-desktop__root-info\"]/*[@class=\"ui-link menu-desktop__root-title\"][contains(translate(text(),\"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯ\",\"абвгдеёжзийклмнопрстуфхцчшщэюя\"),\"пк, ноутбуки, периферия\")])";
             wait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions.presenceOfElementLocated(By.xpath(linkPCAndPeripheryXPath)));
 
@@ -428,7 +432,6 @@ public class DNSCasesTests {
                 //возвращаем курсор на элемент управления
                 actions.pause(Duration.ofSeconds(2)).moveToElement(linkPCAndPeripheryWebElement).perform();
                 wait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions.presenceOfElementLocated(By.xpath(linkNotebooksXPath))).click();
-//                linkNotebooks.click();
                 logger.info("Выполнен переход по ссылке");
             },"Не найден элемент ссылка \"Ноутбуки\"");
             //подождём загрузки страницы
@@ -472,6 +475,7 @@ public class DNSCasesTests {
             String linkRAMXPath = "(//span[@class=\"ui-collapse__link-text\"][contains(text(),\"Объем оперативной памяти\")]/parent::*)";
             WebElement linkRAMWE = eventWait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions
                     .presenceOfElementLocated(By.xpath(linkRAMXPath)));
+
             jsScrollToElement(linkRAMWE);
             linkRAMWE.click();
 
@@ -499,7 +503,7 @@ public class DNSCasesTests {
             String btnSubmitApplyXPath = "(//button[@class=\"button-ui button-ui_brand left-filters__button\"][@data-role=\"filters-submit\"])";
             WebElement btnSubmitApplyGBWE = eventWait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions
                     .presenceOfElementLocated(By.xpath(btnSubmitApplyXPath)));
-            //jsScrollToElement(btnSubmitApplyGBWE);
+
             btnSubmitApplyGBWE.click();
 
             //задержка, чтобы хоть немного увидеть процесс
@@ -513,7 +517,7 @@ public class DNSCasesTests {
             Selenium4Listener.getFullPageScreen(driver);
 
             logger.info("Применяем сортировку");
-            logger.info("Выбираем параметр соритровки по цене");
+            logger.info("Выбираем параметр сортировки по цене");
             String linkOrderXPath = "(//div[@data-id=\"order\"][@class=\"top-filter popover-wrapper\"]/a[@class=\"ui-link ui-link_blue\"])";
             WebElement linkOrderWE = eventWait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions
                     .presenceOfElementLocated(By.xpath(linkOrderXPath)));
@@ -546,6 +550,20 @@ public class DNSCasesTests {
 
             logger.info("переходим по ссылке первого товара");
 
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //задержка, чтобы хоть немного успевал мой тормозной фокс
+            if(DNSCasesTests.env.equalsIgnoreCase("firefox")){
+                try {
+                    Sleeper.SYSTEM_SLEEPER.sleep(Duration.ofSeconds(12));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             String linkFirstProductXPath = "(//div[@class=\"products-list__content\"]//div[@data-id=\"product\"][@class=\"catalog-product ui-button-widget \"]/a[@class=\"catalog-product__name ui-link ui-link_black\"][1])";
             WebElement linkFirstProductWE = eventWait.withTimeout(Duration.ofSeconds(40)).until(ExpectedConditions
                     .presenceOfElementLocated(By.xpath(linkFirstProductXPath)));
@@ -555,6 +573,7 @@ public class DNSCasesTests {
             logger.info("Открываем новую вкладку с страницей ноутбука");
             driver.switchTo().newWindow(WindowType.WINDOW).manage().window().maximize();
             driver.get(notebookLink);
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

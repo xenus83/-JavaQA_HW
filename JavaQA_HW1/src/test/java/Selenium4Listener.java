@@ -39,7 +39,13 @@ public class Selenium4Listener implements WebDriverListener {
         JavascriptExecutor js = (JavascriptExecutor)driver;
         Long pageYOffset = 0L;
         Object pageYOffsetObj = null;
-        logger.info("event afterFindElement(WebDriver ...) with: "+(result.getAccessibleName().equals("")?"unnamed element":result.getAccessibleName()));
+        if(DNSCasesTests.env.equalsIgnoreCase("firefox")){
+            logger.info("event afterFindElement(WebDriver ...) with: element");
+        }
+            else
+        {
+            logger.info("event afterFindElement(WebDriver ...) with: " + (result.getAccessibleName().equals("") ? "unnamed element" : result.getAccessibleName()));
+        }
         String borderStyle = "0px none rgb(51, 51, 51)";
 
         try {
@@ -95,7 +101,8 @@ public class Selenium4Listener implements WebDriverListener {
             }
 
         try{
-            js.executeScript("window.scrollTo(0, arguments[0]);", pageYOffset);
+
+            js.executeScript("window.scrollTo(0, -1 * arguments[0]);", pageYOffset);
         }
         catch(JavascriptException e){
             logger.info("roll back operation: JavascriptException: " + e.getRawMessage());
